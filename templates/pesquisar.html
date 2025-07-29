@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Pesquisar{% endblock %}
+{% block conteudo %}
+<h1>Pesquisar</h1>
+<form action="/pesquisar" method="post">
+    Nome: <input type="text" name="nome">
+    Preço: <input type="text" name="preco">
+    <input type="submit" value="Pesquisar">
+</form>
+{% endblock %}

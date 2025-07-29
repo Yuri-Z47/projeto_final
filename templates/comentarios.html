@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Deixe seu Comentário{% endblock %}
+{% block conteudo %}
+<h1>Deixe seu Comentário</h1>
+
+{% if session.get('login') %}
+<form action="/comentarios" method="post" class="row g-3" style="max-width: 600px;">
+  <div class="col-md-6">
+    <label for="nome" class="form-label">Nome</label>
+    <input id="nome" type="text" name="nome" class="form-control" value="{{ session['nome'] }}" readonly>
+  </div>
+  <div class="col-md-6">
+    <label for="email" class="form-label">E-mail</label>
+    <input id="email" type="email" name="email" class="form-control" value="{{ session['email'] }}" readonly>
+  </div>
+  <div class="col-12">
+    <label for="comentario" class="form-label">Comentário</label>
+    <textarea id="comentario" name="comentario" rows="4" class="form-control" required></textarea>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-warning text-dark">Enviar</button>
+  </div>
+</form>
+
+{% else %}
+<p>Você precisa estar logado para deixar um comentário.</p>
+<a href="/login" class="btn btn-primary">Fazer login</a>
+{% endif %}
+
+{% endblock %}

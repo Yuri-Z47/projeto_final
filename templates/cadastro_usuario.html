@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Cadastro de Usuário{% endblock %}
+{% block conteudo %}
+<h1>Cadastro de Usuário</h1>
+
+{% if erro %}
+  <div class="alert alert-danger" role="alert">
+    {{ erro }}
+  </div>
+{% endif %}
+
+<form action="/cadastrar_usuario" method="post">
+    <div class="mb-3">
+        <label for="login" class="form-label">Login:</label>
+        <input type="text" name="login" id="login" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="senha" class="form-label">Senha:</label>
+        <input type="password" name="senha" id="senha" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome:</label>
+        <input type="text" name="nome" id="nome" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">E-mail:</label>
+        <input type="email" name="email" id="email" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+{% endblock %}

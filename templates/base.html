@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}YZ Cardápio{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #121212; /* preto suave */
+      color: #f0f0f0;
+    }
+    .navbar {
+      background-color: #000; /* preto */
+    }
+    .navbar-brand, .nav-link {
+      color: #ff6600 !important; /* laranja */
+      font-weight: bold;
+    }
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ff6600;
+    }
+    footer {
+      background-color: #000;
+      color: #ccc;
+      padding: 20px 0;
+      margin-top: 40px;
+    }
+    footer a {
+      color: #ff6600;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar navbar-expand-lg px-4">
+    <div class="container-fluid">
+      <a class="navbar-brand logo" href="/">Y<span style="transform: rotate(90deg); display: inline-block;">Z</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" 
+        aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMenu">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/categoria/1">Petiscos</a>
+          <a class="nav-link" href="/categoria/2">Hambúrgueres</a>
+          <a class="nav-link" href="/categoria/3">Drinks/Bebidas</a>
+          <a class="nav-link" href="/comentarios">Comentários</a>
+          {% if session.get("login") == "yzd" %}
+            <a class="nav-link" href="/cadastrar">Cadastrar Produto</a>
+            <a class="nav-link" href="/logout">Logout</a>
+          {% elif session.get("login") %}
+            <a class="nav-link" href="/logout">Logout</a>
+          {% else %}
+            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link" href="/cadastrar_usuario">Cadastrar</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="container mt-4">
+  {% block conteudo %}
+  {% endblock %}
+</main>
+
+<footer class="text-center">
+  <div class="container">
+    <p>© 2025 YZ Cardápio - Projeto desenvolvido por Yuri Z.D.</p>
+    <p>Endereço fictício: Rua Saborosa, 123 - Cidade Gourmet</p>
+    <p>
+      <a href="#">Instagram</a> |
+      <a href="#">Facebook</a> |
+      <a href="#">WhatsApp</a>
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

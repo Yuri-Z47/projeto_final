@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Cadastrar Produto{% endblock %}
+{% block conteudo %}
+<h1>Cadastrar Produto</h1>
+<form action="/cadastrar" method="post" class="row g-3" style="max-width: 600px;">
+  <div class="col-12">
+    <label for="categoria" class="form-label">Categoria</label>
+    <select id="categoria" name="categoria" class="form-select" required>
+      {% for id, nome in categorias %}
+        <option value="{{id}}">{{nome.capitalize()}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-6">
+    <label for="nome" class="form-label">Nome</label>
+    <input id="nome" type="text" name="nome" class="form-control" required>
+  </div>
+  <div class="col-md-3">
+    <label for="preco" class="form-label">Preço</label>
+    <input id="preco" type="text" name="preco" class="form-control" required>
+  </div>
+  <div class="col-md-3">
+    <label for="img" class="form-label">Imagem (nome do arquivo)</label>
+    <input id="img" type="text" name="img" class="form-control" required>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-warning text-dark">Cadastrar</button>
+  </div>
+</form>
+{% endblock %}

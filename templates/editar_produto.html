@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Editar Produto{% endblock %}
+{% block conteudo %}
+<h1>Editar Produto</h1>
+<form action="/atualizar" method="post">
+    Categoria:         
+        <select name="categoria">
+        {% for id, nome in categorias %}
+            <option {% if id == produto['id_categoria'] %} selected {%endif%}                
+                value="{{id}}">{{nome.capitalize()}}</option>  
+        {% endfor %}    
+        </select>
+       
+    Nome: <input type="text" name="nome" value="{{ produto['nome']}}">
+    Preço: <input type="text" name="preco" value="{{ produto['preco'] }}">
+    Img: <input type="text" name="img" value="{{ produto['img'] }}">
+    
+    <input type="hidden" name="id" value="{{ produto['id'] }}">
+    
+    <input type="submit" value="Atualizar">
+</form>
+{% endblock %}

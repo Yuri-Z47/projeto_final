@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Lista de Produtos{% endblock %}
+{% block conteudo %}
+<h1 class="mb-4">Lista de Produtos</h1>    
+<div class="row row-cols-1 row-cols-md-3 g-4"> <!-- g-4 = espaçamento entre cards -->
+{% for produto in produtos %}
+  <div class="col">
+    <div class="card h-100 text-dark border-0">
+      <!-- Imagem sem corte, encostada no topo -->
+      <img src="/static/img/{{ produto[0] }}" class="card-img-top" alt="{{ produto[2] }}" style="margin-bottom: 0;">
+      
+      <div class="card-body">
+        <h5 class="card-title">{{ produto[2] }}</h5>
+        <p class="card-text" style="color: #ff6600; font-weight: bold;">R$: {{ produto[1] }}</p>
+      </div>
+
+      <div class="card-footer bg-white border-0">
+        {% if session.get('login') %}
+          <a href="#" class="btn btn-primary btn-sm">Comprar</a>
+        {% endif %}
+        {% if session.get('login') == 'yzd' %}
+          <a href="/editar/{{ produto[3] }}" class="btn btn-warning btn-sm ms-2">Editar</a>
+          <a href="/excluir/{{ produto[3] }}" class="btn btn-danger btn-sm ms-2">Excluir</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}
