@@ -15,6 +15,29 @@ def inject_user():
         "is_admin": is_admin()
     }
 
+def format_preco(preco):
+    try:
+        if isinstance(preco, str):
+            preco = preco.replace(',', '.')
+        return float(preco)
+    except:
+        return 0.0
+    
+def formatar_produto(p):
+    preco_float = format_preco(p[1])
+    desconto = int(p[4] or 0)
+    preco_desconto = preco_float * (1 - desconto / 100)
+    preco_original_format = f"{preco_float:,.2f}".replace('.', ',')
+    preco_desconto_format = f"{preco_desconto:,.2f}".replace('.', ',')
+    return {
+        "img": p[0],
+        "preco_original": preco_original_format,
+        "nome": p[2],
+        "id": p[3],
+        "desconto": desconto,
+        "preco_com_desconto": preco_desconto_format
+    }
+
 @app.get("/")
 def get_home():
     return flask.render_template("home.html")
@@ -47,17 +70,23 @@ def get_logout():
 
 @app.get('/produtos')
 def get_produtos():
-    sql = "SELECT img, preco, nome, id FROM produtos ORDER BY preco DESC;"
+    sql = "SELECT img, preco, nome, id, desconto FROM produtos ORDER BY preco DESC;"
     with sqlite3.Connection('produtos.db') as conn:
-        lista_de_produtos = conn.execute(sql).fetchall()
-    return flask.render_template("lista_produtos.html", produtos=lista_de_produtos)
+        produtos_raw = conn.execute(sql).fetchall()
+
+    produtos = [formatar_produto(p) for p in produtos_raw]
+
+    return flask.render_template("lista_produtos.html", produtos=produtos)
 
 @app.get("/categoria/<id>")
 def get_categoria(id):
-    sql = "SELECT img, preco, nome, id FROM produtos WHERE id_categoria = ? ORDER BY nome;"
+    sql = "SELECT img, preco, nome, id, desconto FROM produtos WHERE id_categoria = ? ORDER BY nome;"
     with sqlite3.Connection('produtos.db') as conn:
-        lista_de_produtos = conn.execute(sql, (id,)).fetchall()
-    return flask.render_template("lista_produtos.html", produtos=lista_de_produtos)
+        produtos_raw = conn.execute(sql, (id,)).fetchall()
+
+    produtos = [formatar_produto(p) for p in produtos_raw]
+
+    return flask.render_template("lista_produtos.html", produtos=produtos)
 
 @app.get("/editar/<id_produto>")
 def editar_produto(id_produto):
@@ -66,18 +95,19 @@ def editar_produto(id_produto):
     with sqlite3.Connection('produtos.db') as conn:
         categorias = conn.execute("SELECT id, nome FROM categorias;").fetchall()
         produto = conn.execute(
-            "SELECT id, nome, preco, img, id_categoria FROM produtos WHERE id = ?",
+            "SELECT id, nome, preco, img, id_categoria, desconto FROM produtos WHERE id = ?",
             (id_produto,)
         ).fetchone()
-        if not produto:
-            return flask.redirect("/")
-        dados_produto = {
-            "id": produto[0],
-            "nome": produto[1],
-            "preco": produto[2],
-            "img": produto[3],
-            "id_categoria": produto[4]
-        }
+    if not produto:
+        return flask.redirect("/")
+    dados_produto = {
+        "id": produto[0],
+        "nome": produto[1],
+        "preco": produto[2],
+        "img": produto[3],
+        "id_categoria": produto[4],
+        "desconto": produto[5] or 0
+    }
     return flask.render_template("editar_produto.html", categorias=categorias, produto=dados_produto)
 
 @app.post("/atualizar")
@@ -89,12 +119,17 @@ def atualizar_produto():
     preco = flask.request.form['preco']
     img = flask.request.form['img']
     id_categoria = flask.request.form['categoria']
+    desconto = flask.request.form.get('desconto', 0)
+    try:
+        desconto = int(desconto)
+    except:
+        desconto = 0
 
     sql = '''
-    UPDATE produtos SET img=?, nome=?, preco=?, id_categoria=? WHERE id=?
+    UPDATE produtos SET img=?, nome=?, preco=?, id_categoria=?, desconto=? WHERE id=?
     '''
     with sqlite3.Connection('produtos.db') as conn:
-        conn.execute(sql, (img, nome, preco, id_categoria, id))
+        conn.execute(sql, (img, nome, preco, id_categoria, desconto, id))
         conn.commit()
     return flask.redirect("/")
 
@@ -110,7 +145,7 @@ def get_cadastrar():
 def post_cadastrar():
     if not is_admin():
         return flask.redirect("/")
-    nome  = flask.request.form.get("nome")
+    nome = flask.request.form.get("nome")
     preco = flask.request.form.get("preco")
     img = flask.request.form.get("img")
     categoria = flask.request.form.get("categoria")
@@ -128,12 +163,14 @@ def get_pesquisar():
 @app.post("/pesquisar")
 def post_pesquisar():
     nome = flask.request.form.get("nome", "")
-    sql = "SELECT img, preco, nome, id FROM produtos WHERE nome LIKE ? ORDER BY nome ASC;"
+    sql = "SELECT img, preco, nome, id, desconto FROM produtos WHERE nome LIKE ? ORDER BY nome ASC;"
     with sqlite3.Connection('produtos.db') as conn:
         lista_de_produtos = conn.execute(sql, ('%' + nome + '%',)).fetchall()
         if not lista_de_produtos:
-            lista_de_produtos = [('', '0,00', 'não encontrado', 0)]
-    return flask.render_template("lista_produtos.html", produtos=lista_de_produtos)
+            lista_de_produtos = [('', '0,00', 'não encontrado', 0, 0)]
+
+    produtos = [formatar_produto(p) for p in lista_de_produtos]
+    return flask.render_template("lista_produtos.html", produtos=produtos)
 
 @app.get("/excluir/<id_produto>")
 def excluir_produto(id_produto):
@@ -182,7 +219,7 @@ def post_cadastrar_usuario():
         if cur.fetchone():
             return flask.render_template("cadastro_usuario.html", erro="Login já existe, tente outro.")
 
-        # salva senha em texto puro (sem hash)
+        # salva senha em texto puro (mantido conforme sua decisão)
         conn.execute(
             "INSERT INTO usuarios (login, senha, nome, email) VALUES (?, ?, ?, ?)",
             (login, senha, nome, email)

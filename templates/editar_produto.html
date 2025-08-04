@@ -1,22 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Editar Produto{% endblock %}
 {% block conteudo %}
-<h1>Editar Produto</h1>
-<form action="/atualizar" method="post">
-    Categoria:         
-        <select name="categoria">
-        {% for id, nome in categorias %}
-            <option {% if id == produto['id_categoria'] %} selected {%endif%}                
-                value="{{id}}">{{nome.capitalize()}}</option>  
-        {% endfor %}    
-        </select>
-       
-    Nome: <input type="text" name="nome" value="{{ produto['nome']}}">
-    Preço: <input type="text" name="preco" value="{{ produto['preco'] }}">
-    Img: <input type="text" name="img" value="{{ produto['img'] }}">
-    
-    <input type="hidden" name="id" value="{{ produto['id'] }}">
-    
-    <input type="submit" value="Atualizar">
+<h1 class="mb-4">Editar Produto</h1>
+
+<form action="/atualizar" method="post" class="row g-3">
+
+  <div class="col-md-6">
+    <label for="categoria" class="form-label">Categoria</label>
+    <select class="form-select" name="categoria" id="categoria" required>
+      {% for id, nome in categorias %}
+        <option value="{{ id }}" {% if id == produto['id_categoria'] %} selected {% endif %}>
+          {{ nome.capitalize() }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-6">
+    <label for="nome" class="form-label">Nome</label>
+    <input type="text" class="form-control" name="nome" id="nome" value="{{ produto['nome'] }}" required>
+  </div>
+
+  <div class="col-md-4">
+    <label for="preco" class="form-label">Preço</label>
+    <input type="number" step="0.01" class="form-control" name="preco" id="preco" value="{{ produto['preco'] }}" required>
+  </div>
+
+  <div class="col-md-4">
+    <label for="img" class="form-label">Imagem (nome do arquivo)</label>
+    <input type="text" class="form-control" name="img" id="img" value="{{ produto['img'] }}" required>
+  </div>
+
+  <div class="col-md-4">
+    <label for="desconto" class="form-label">Desconto (%)</label>
+    <input type="number" class="form-control" name="desconto" id="desconto" min="0" max="100"
+           value="{{ produto['desconto'] if 'desconto' in produto else 0 }}">
+  </div>
+
+  <input type="hidden" name="id" value="{{ produto['id'] }}">
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-success">Atualizar Produto</button>
+  </div>
 </form>
 {% endblock %}
